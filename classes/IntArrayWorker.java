@@ -44,7 +44,7 @@ public class IntArrayWorker
   public int getColTotal(int col){
     int total = 0;
     for(int i = 0; i < matrix.length; i++){
-      total += matrix[col][i];
+      total += matrix[i][col];
     }
     return total;
   }
