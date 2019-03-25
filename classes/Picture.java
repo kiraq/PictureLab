@@ -314,21 +314,45 @@ public class Picture extends SimplePicture
     }   
   }
 
-  /** Method to create a collage of several pictures */
-  public void createCollage()
+  public void copy(Picture fromPic,
+                   int startRow, int startCol, int endRow, int endCol)
   {
-    Picture flower1 = new Picture("flower1.jpg");
-    Picture flower2 = new Picture("flower2.jpg");
-    this.copy(flower1,0,0);
-    this.copy(flower2,100,0);
-    this.copy(flower1,200,0);
-    Picture flowerNoBlue = new Picture(flower2);
-    flowerNoBlue.zeroBlue();
-    this.copy(flowerNoBlue,300,0);
-    this.copy(flower1,400,0);
-    this.copy(flower2,500,0);
+    Pixel fromPixel = null;
+    Pixel toPixel = null;
+    Pixel[][] toPixels = this.getPixels2D();
+    Pixel[][] fromPixels = fromPic.getPixels2D();
+    for (int fromRow = 0, toRow = startRow;
+         fromRow < endRow &&
+                 toRow < endRow;
+         fromRow++, toRow++)
+    {
+      for (int fromCol = 0, toCol = startCol;
+           fromCol < endCol &&
+                   toCol < endCol;
+           fromCol++, toCol++)
+      {
+        fromPixel = fromPixels[fromRow][fromCol];
+        toPixel = toPixels[toRow][toCol];
+        toPixel.setColor(fromPixel.getColor());
+      }
+    }
+  }
+
+  /** Method to create a collage of several pictures */
+  public void myCollage()
+  {
+    Picture robot = new Picture("robot.jpg");
+    Picture seagull = new Picture("seagull.jpg");
+    this.copy(robot,0,0,20,20);
+    this.copy(seagull,100,0);
+    this.copy(robot,200,0,272,30);
+    Picture seagullNegate = new Picture(seagull);
+    seagullNegate.negate();
+    this.copy(seagullNegate,300,0);
+    this.copy(robot,400,0);
+    this.copy(seagull,500,0);
     this.mirrorVertical();
-    this.write("collage.jpg");
+    this.write("mycollage.jpg");
   }
   
   
@@ -339,6 +363,8 @@ public class Picture extends SimplePicture
   {
     Pixel leftPixel = null;
     Pixel rightPixel = null;
+    Pixel topPixel = null;
+    Pixel botPixel = null;
     Pixel[][] pixels = this.getPixels2D();
     Color rightColor = null;
     for (int row = 0; row < pixels.length; row++)
@@ -354,6 +380,21 @@ public class Picture extends SimplePicture
           leftPixel.setColor(Color.BLACK);
         else
           leftPixel.setColor(Color.WHITE);
+      }
+    }
+    for (int col = 0; col < pixels[0].length; col++)
+    {
+      for (int row = 0;
+           row < pixels.length-1; row++)
+      {
+        topPixel = pixels[row][col];
+        botPixel = pixels[row+1][col];
+        rightColor = botPixel.getColor();
+        if (topPixel.colorDistance(rightColor) >
+                edgeDist)
+          topPixel.setColor(Color.BLACK);
+        else
+          topPixel.setColor(Color.WHITE);
       }
     }
   }
